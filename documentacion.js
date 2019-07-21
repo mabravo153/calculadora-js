@@ -2773,6 +2773,363 @@ La solución en PHP es sencilla, simplemente debemos codificar la variable que t
 conflictivos a formato URL. Para ello utilizamos la función urlenconde(), que viene en la
 librería de funciones de PHP.
 
+
+
+
+
+
+FORMULARIOS CON PHP 
+
+cuando trabajamos con formularios en html podemos enviarlos por metodos de POST y GET, 
+
+desde mi punto de vusta es mas recomendable usar post, ya que este los envia en el cuerpo del formularios y asi son 
+enviados al servidor 
+en cambio get, los añade directamente a la url 
+
+
+VALIDAR QUE UNO DE LOS CAMPOS NO LLEGUE VACIO 
+
+para validar que una variable tenga datos lo podemos hacer de una manera 
+extricta con filter_has_var comprueba que una variable de cierto topo existe. 
+esta recibe dos parametros:
+
+el tipo INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER o INPUT_ENV.
+
+y el nombre de la variable. en este punto debemos tener el cuenta que se añada es el nombre de 
+la llave que retorna el array, por ejemplo
+
+ if (filter_has_var(INPUT_POST,'nombre')) {
+        # code...
+      }
+
+y tambien usamos 
+
+strlen()  para comprobar que el elemento sea diferente a 0
+
+tambien usamos el metodo FILTER_INPUT()
+este recibe varios parametros, los dos primeros son similares a los del metodo filter_has_var adicional a eso podemos agregarle unos filtros
+que podemos encontrar en 
+https://www.php.net/manual/es/filter.filters.php dependiendo al filtro que queramos, pero echando un ojo, encuentro filtros muy utiles 
+
+esto es un filtrado muy extricto. 
+
+
+aunque podemos usar un metodo de validacion menos extricto. este metodo es isset()
+recibe un unico parametro que es el nombre de la variable isset($variable);
+esta variable retornara true en caso que la variable este definida y el valor sea diferente a 0
+
+
+o podemos usar strlen(); para validar que el dato no este vacio 
+
+if (strlen($nombre) > 0 ) {
+        echo "<p> {$nombre}</p>";
+      } else {
+        echo "<p>valor no valido </p>";
+      }
+
+o podemos usar un mwetodo llamado empty()
+
+
+
+RECOGER VALORES DE UN CHECKBOX
+
+cuando habilitas un checkbox este se pone como on y la variable se envia, cuando no se habilita la variable no es creada por lo cual no se 
+puede validar de la manera convencional, luego de que se haya confirmado que el valor es enviado en post. podemos crear la variable y leer los datos
+
+
+if (isset($_POST['notificaciones'])) {
+        $notificaciones = $_POST['notificaciones'];
+
+        if ($notificaciones == "on") {
+          echo "hacemos el codigo para enviar las notificaciones";
+        }
+      }
+
+
+
+
+CHECKBOXES RELACIONADOS
+
+es recomendable que cuando son asi, en el name le ponemos un nombre en comun y le abrimos llaves [] el value si debe ser diferente, como si fuera un array 
+ya que el metido post nos retorna un array es necesario primero validar si el array existe. si existe. creamos una variable asigndole el arry 
+luego debemos verificar si ese array tiene o no algun indice, e caso de tenerlo ejecutamos el codigo, recorremos el arry e imprimimos su contenido 
+
+
+if (isset($_POST['curso'])) {
+        $cursos = $_POST['curso'];
+        if (count($cursos) > 0 ) {
+          foreach ($cursos as $key => $value) {
+            echo "<p> {$value} </p>";
+          }
+        }
+      }
+
+podemos tener mas verificacion con is_string, ya que los valores retornados son unos string 
+
+
+VALIDAR SELECT 
+
+para validar un select lo hacemos el mismo metodo que para un checkbox, pero con la diferencia que es mas recomedable en vez de usar un foreach 
+es mejor usar un switch ya que este nos permite segun el caso, ejecutar el codigo 
+
+
+
+
+VALIDAR UN RADIO BUTTON 
+
+tenemos la opcion de crearlo directamente con php.  podemos crear un array con cada uno de los elementos que queremos imprimir, luego lo 
+mandamos a una etiqueta html 
+
+<div class="tipo_curso">
+<h2>Tipo de Curso</h2>
+<?php  $opciones = array(
+   'pres' => 'Presencial',
+    'online' => 'En Línea'
+);?>
+
+
+<?php foreach($opciones as $key => $opcion) {
+  echo "<div class='campo'>";
+  echo "<input type='radio' name='opciones' value='$key' > $opcion";
+  echo "</div>";
+} ?>
+</div>
+
+
+
+VALIDAR UN TEXTAREA 
+para validar un textarea lo hacemos de la misma manera que con un input de datos, el textarea nos retorna una variable vacia, para evitar eso 
+podemos usar un strlen para verificar que no sea una variable vacia, y tambien invalidamos los espacios en blanco 
+
+     if (empty($_POST['mensaje']) || trim($_POST['mensaje']) ) {
+        $mensaje = $_POST['mensaje'];
+        echo "<p> {$mensaje} </p>";
+      }else {
+        echo '<p> mensaje vacio </p>';
+ }
+
+
+
+AÑADIRLE SEGURIDAD AL FORMULARIO. 
+poemos agergarle filtros adicnales como habiamos escrito anteriormente, los podemos encontrsar en este link  
+https://www.php.net/manual/es/filter.filters.php  es recomendable usar filtros de sanidad para evitar que codigo infeccioso se ejecute en nuestro formulario
+
+
+
+
+
+
+BASE DE DATOS Y MYSQL
+
+como debes recordar, una base de datos es un sitio donde se almacena datos para luego poder accesar a 
+ellos de una manera rapida 
+
+para crear una base de datos recuerda que puedes hacerlo desde la consola con sql 
+
+create database nombre_base_datos;
+
+al momento de crear las tablas es necesario agregar el motor de almacenamiento 
+
+esto lo hacemos con engine=innodb; esto nos ayuda a agregar datos mas adelante en php 
+
+TIPOS DE DATOS EN MQSL
+
+ENTEROS Y NUMEROS 
+
+para tener en cuenta, usamos ciertos tipos de datos para almanecar numeros 
+los que mas usaremos segun mi criterio son 
+
+int = que es un numero entero el cual nos permite almancenar 2 billones de digitos
+tinyint = que abarca 127 numeros 
+smallint = ms de 32000 digitos
+
+si usamos unsigned acepta puros numeros positivos y crece el rango 
+
+
+
+NUMEROS FLOTANTES O DECIMALES 
+
+podemos usar float para valores decimales 
+double para valores decimales muy grandes 
+o podemos usar decimal para  sistemas de pagos ya que este no aproxima un valor no se redondea 
+
+
+
+TEXTOS Y DATOS BINARIOS 
+
+varchar = texto corto o que varia de tamaño 
+char = extension fija, como una contraseña
+text = texto largo puede ser como una entrada de blog 
+enum= valor de una lista numerada 
+blog = me permite guardar imagenes, sonidos y archivos comprimidos, esto es una mala practica 
+es mejor guardar la ruta de la imagen 
+
+
+FECHA Y HORA 
+
+DATE = año-mes-dia
+time = hora-minutos-segundos
+datetime = es la convinacion de los dos , primero el año luego las horas 
+timestamp es lo mismo que datetime 
+year solo guarda el año 
+
+
+AGREGAR LLAVES FORANEAS
+
+segun recuerdas, las llaves se definen dependiendo la relacion que haya entre las tablas, de uno a muchos
+de muchos a muchos, de uno a uno. estas se deben crear para conectar una llave primaria con otra tabla 
+recuerda que debe ser del mismo tipo de dato que la otra tabla 
+
+ALTER TABLE Orders
+ADD FOREIGN KEY (PersonID) REFERENCES Persons(PersonID); 
+
+CREAR LAS TABLAS 
+
+para crear las tablas como recuerdas, es con create table debes asignar el nombre de la tabla 
+luego de eso agregar los campos que esta tendra 
+
+create table prueba (
+  nombrecampo int , 
+);
+
+debe tener una coma al final del campo para poder agregar mas 
+y al final de todo debes agregar un punto y coma 
+
+
+MODICIAR TABLAS
+
+recuerda que para modificar tablas, aggregar alguna llave foreanea, modificar un campo o algo por el estilo, 
+se debe usar 
+alter table nombre_tabla add nombre_fila 
+
+en este link podras encontrar lo necesario para 
+
+https://dev.mysql.com/doc/refman/8.0/en/alter-table.html
+
+
+INSERTAR DATOS EN UNA TABLA 
+para insertar datos en una tabla lo podemos hacer con insert into 
+para saber que columnas y el tipo de dato que recibe podemos usar describe 
+y ya sabes como insertar los datos, cuando el valor es autoincremental. debes poner como valor null, mqsl se encargara
+de rellenar ese dato, si queremos dejar el dato vacio debemos especificarlo dejando el espcio vacio 
+si es un string "" y si es un entero dejarlo entre las comillas 
+
+insert into inventario values (null, "camaro ss", "chevrolet"," ",27000,350000,"un excelente auto de coleccion");
+
+
+OPTENIENDO DATOS EN SQL 
+
+para optener datos podemos usar select (aqui ponemos las columnas que queremos mostrar)
+from = las tablas de donde sacaremos la informacion 
+where son condicioanales de la busqueda por ejemplo el id de algun campo especifico 
+
+en este ejemplo se puede hacer idAuto = 3; de esa manera solo aparece el tres 
+
+SELECT nombreAuto from inventario WHERE marcaAuto = "ford" 
+
+
+ACTUALIZAR DATOS 
+podemos actualizar datos si un usuario desea hacerlos o el programa lo requiere 
+la sintaxis que podemos usar es la siguiente 
+
+update es el llamado al codigo
+set es donde se escribe las tablas a modificar y se les asigna el valor  
+y el where es la condicional que queramoa agrgar 
+
+UPDATE table_name SET column1 = value1, column2 = value2 WHERE id=100; 
+
+este es en el caso que queramos actualizar dos valores en este caso del id100
+
+update inventario set anoModelo = 2005 WHERE idAuto =2 
+
+o en nuestro ejemplo 
+
+siempre que se vaya a realizar un update es que siempre que se haga este tipo de cambio es poner un where
+
+
+
+ELIMINAR UN REGISTRO DE LA BASE DE DATOS
+
+https://mariadb.com/kb/en/library/delete/ aqui encontraremos la informacion sobre lo que deseamos hacer 
+
+
+en nuestro mundo laboral tendremos que encontrarnos con sitios a los que debamos borrar los registros 
+por lo cual es importante saber eliminarlos de la base de datos, esto se hace con delete, con el podemos eliminar 
+
+esta es la sintaxis 
+DELETE FROM t1 WHERE c1 IN (SELECT b.c1 FROM t1 b WHERE b.c2=0);
+
+o podemos agregar este ejemplo mas sencillo 
+DELETE FROM inventario WHERE nombreAuto = "fortunet";
+
+
+ORDENAR LA INFORMACION QUE NOS RETORNA 
+orderby es una herramienta que nos sirve para ordenara la informacion que nos retorna 
+
+la sintaxis es similar a la de select 
+
+select * (nos retorna todo) from inventario order by (escribimos como queremos ordenarlo) asc 
+
+de esta manera nos retorna como queremos presentarlo 
+SELECT * FROM inventario ORDER by nombreAuto ASC 
+
+en este caso queremos mostrarlo de una manera acendente 
+
+SELECT * FROM inventario ORDER by precioAuto DESC LIMIT 3 
+con esta consulta podemos ver los 3 autos mas costosos 
+
+
+CONTRAR REGISTROS EN SQL
+
+The COUNT() function returns the number of rows that matches a specified criteria.
+
+The AVG() function returns the average value of a numeric column. esta es una funcion para verificar el promedio 
+
+The SUM() function returns the total sum of a numeric column.
+
+esto nos sirve para verificar exactamente en el inventario y asi tener un stock 
+la sintaxis es la siguiente 
+
+SELECT marcaAuto ,COUNT(*) FROM inventario GROUP by marcaAuto
+
+aqui estamos contando lo s autos para por su marca. aqui el select es para que nos muerte la marca del mismo 
+
+
+
+
+OPERADORES EN SQL
+
+esto nos ayuda a filtrar son los mismo soperadores arigmeticos que usamos en los demas lenguajes de programacion 
+
+uno de los operadores que podemos usar tambien son between
+
+
+
+
+FUNCIONES PARA CADENAS 
+
+concatenar valores en sql  lo podemos hacer con concat 
+
+se escribe luego del select 
+
+select concat('marcaAuto','nombreAuto'),anoModelo, precioAuto FROM inventario WHERE anoModelo > 2006  and precioAuto <= 25000 ORDER by anoModelo ASC
+
+
+
+AGREGANDO PHP AL PROYECTO 
+
+para trabajar con php es recomendable poner el nombre de la pagina con extencion php al menos en las que usaremos ya que esto nos permite agregar el include 
+
+para crear un template en php lo podemos hacer de la siguiente manera creamos el archivo como lo queremos llamar (header.php) 
+copiamos el codigo html que queremos que sea el template.. 
+ahora crearemos un templete del header. debemos cortar desde la barra hasta el doctype, para agregarlo en el documento. debemos agregar la palabra 
+reservada include_once luego pongo entre comillas la ruta al archivo 
+
+
+
+CREAANDO UN ARCHIVO DE CONEXON A LA BASE DE DATOS 
+
+
 */
  
 
